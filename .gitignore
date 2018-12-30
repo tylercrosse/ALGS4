@@ -1,0 +1,11 @@
+# bin folder
+bin/
+
+# vscode folder
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# course videos
+lectures/

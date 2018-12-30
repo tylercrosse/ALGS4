@@ -37,8 +37,10 @@ public class Percolation {
      * @param col
      */
     public void open(int row, int col) {
+        checkBounds(row, col);
         if (!isOpen(row, col)) {
-            numOpen++
+            numOpen++;
+            wqf.union(row, col);
         }
     }
 
@@ -95,6 +97,21 @@ public class Percolation {
      */
     private int xyTo1D(int row, int col) {
         return (row - 1) * (col - 1) * size;
+    }
+
+    /**
+     * throws an error if row or column are not inside the grid
+     * 
+     * @param row
+     * @param col
+     */
+    private void checkBounds(int row, int col) {
+        if (row <= 0 || row > size) {
+            throw new IndexOutOfBoundsException("row index "+ row +" out of bounds");
+        }
+        if (col <= 0 || col > size) {
+            throw new IndexOutOfBoundsException("col index "+ col +" out of bounds");
+        }
     }
 
     /**
