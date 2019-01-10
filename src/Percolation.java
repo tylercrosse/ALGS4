@@ -1,7 +1,8 @@
+
 /******************************************************************************
  *  Compilation:  javac Percolation.java
  *  Execution:    java Percolation n
- *  Dependencies: WeightedQuickUnionUF
+ *  Dependencies: WeightedQuickUnionUF, algs4.StdOut, algs4.WeightedQuickUnionUF
  *
  *  This program takes the grid size n as a command-line argument.
  *  Then, the user repeatedly clicks sites to open with the mouse.
@@ -13,30 +14,53 @@
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+/**
+ * The Percolation class models percolation system using an n-by-n grid of
+ * sites. Each site is either open or blocked. A full site is an open site that
+ * can be connected to an open site in the top row via a chain of neighboring
+ * (left, right, up, down) open sites. We say the system percolates if there is
+ * a full site in the bottom row. In other words, a system percolates if we fill
+ * all open sites connected to the top row and that process fills some open site
+ * on the bottom row.
+ *
+ * @author Tyler Crosse
+ */
 public class Percolation {
-    private int size; // size of grid
+    /**
+     * Dimensions of square grid.
+     */
+    private int size;
+    /**
+     * Matrix representation of n by n grid of booleans.
+     */
     private boolean[][] grid;
-    public WeightedQuickUnionUF wqf;
+    /**
+     * Instnace of Weighted Quick Union Find.
+     */
+    private WeightedQuickUnionUF wqf;
+    /**
+     * The number of open sites.
+     */
     private int numOpen;
 
     /**
-     * create n-by-n grid, with all sites blocked
+     * Create n-by-n grid, with all sites blocked.
      *
      * @param n size
      */
-    public Percolation(int n) {
+    public Percolation(final int n) {
         size = n;
         grid = new boolean[n][n];
         wqf = new WeightedQuickUnionUF(n * n);
     }
 
     /**
-     * open site (row, col) if it is not open already
+     * Open site (row, col) if it is not open already.
      *
-     * @param row
-     * @param col
+     * @param row the row number
+     * @param col the col number
      */
-    public void open(int row, int col) {
+    public void open(final int row, final int col) {
         checkBounds(row, col);
         if (!isOpen(row, col)) {
             numOpen++;
@@ -44,7 +68,8 @@ public class Percolation {
             int oneDsite = xyTo1D(row, col);
             // above
             if (row + 1 <= size && isOpen(row + 1, col)) {
-                // StdOut.println("connecting ["+row+", "+col+"] with ["+(row + 1)+", "+col+"]");
+                // StdOut.println("connecting ["+row+", "+col+"] with
+                // ["+(row + 1)+", "+col+"]");
                 wqf.union(oneDsite, xyTo1D(row + 1, col));
             }
             // right
@@ -63,46 +88,48 @@ public class Percolation {
     }
 
     /**
-     * is site (row, col) open?
+     * Is site (row, col) open?
      *
-     * @param row
-     * @param col
+     * @param row the row number
+     * @param col the col number
      * @return boolean
      */
-    public boolean isOpen(int row, int col) {
+    public boolean isOpen(final int row, final int col) {
         return grid[row - 1][col - 1];
     }
 
     /**
-     * is site (row, col) full?
+     * Is site (row, col) full?
      *
-     * @param row
-     * @param col
-     * @return
+     * @param row the row number
+     * @param col the col number
+     * @return boolean
      */
-    public boolean isFull(int row, int col) {
+    public boolean isFull(final int row, final int col) {
         if (isOpen(row, col)) {
             // loop through first row to see
             for (int k = 0; k < size; k++) {
-                if (wqf.connected(xyTo1D(row, col), k)) return true;
+                if (wqf.connected(xyTo1D(row, col), k)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     /**
-     * number of open sites
+     * Number of open sites.
      *
-     * @return
+     * @return int
      */
     public int numberOfOpenSites() {
         return numOpen;
     }
 
     /**
-     * does the system percolate?
-     * 
-     * a system percolates if we fill all open sites connected to the top row 
+     * Does the system percolate?
+     *
+     * a system percolates if we fill all open sites connected to the top row
      * and that process fills some open site on the bottom row
      *
      * @return boolean
@@ -110,52 +137,57 @@ public class Percolation {
     public boolean percolates() {
         // bottom row (grid[n - 1][0] ... grid[n - 1][n - 1])
         for (int j = 1; j <= size; j++) {
-            // StdOut.println("j: "+j+" isOpen: "+ isOpen(size, j) + " isFull: " + isFull(size, j));
-            if (isFull(size, j)) return true;
+            // StdOut.println("j: "+j+" isOpen: "+ isOpen(size, j) +
+            // " isFull: " + isFull(size, j));
+            if (isFull(size, j)) {
+                return true;
+            }
         }
         return false;
     }
 
     /**
-     * map from a 2-dimensional (row, column) pair to a 1-dimensional union find object index
+     * Map from a 2-dimensional (row, column) pair to a 1-dimensional union find
+     * object index.
      *
-     * @param row
-     * @param col
+     * @param row the row number
+     * @param col the col number
+     * @return int
      */
-    private int xyTo1D(int row, int col) {
+    private int xyTo1D(final int row, final int col) {
         return (row - 1) * size + (col - 1);
     }
 
     /**
-     * throws an error if row or column are not inside the grid
-     * 
-     * @param row
-     * @param col
+     * Throws an error if row or column are not inside the grid.
+     *
+     * @param row the row number
+     * @param col the col number
      */
-    private void checkBounds(int row, int col) {
+    private void checkBounds(final int row, final int col) {
         if (row <= 0 || row > size) {
-            throw new IndexOutOfBoundsException("row index "+ row +" out of bounds");
+            throw new IndexOutOfBoundsException(
+                "row index " + row + " out of bounds"
+            );
         }
         if (col <= 0 || col > size) {
-            throw new IndexOutOfBoundsException("col index "+ col +" out of bounds");
+            throw new IndexOutOfBoundsException(
+                "col index " + col + " out of bounds"
+            );
         }
     }
 
     /**
-     * test client
+     * Test client.
      *
-     * @param args
+     * @param args arguments
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         int n = Integer.parseInt(args[0]);
         StdOut.println(n + " by " + n + " grid");
         Percolation perc = new Percolation(n);
         perc.open(1, 1);
         perc.open(2, 1);
-        // StdOut.println(perc.isOpen(1, 1));
-        // StdOut.println(perc.isOpen(1, 2));
         StdOut.println("percolates?" + perc.percolates());
-        // StdOut.println(perc.wqf.connected(perc.xyTo1D(1, 1), perc.xyTo1D(1, 2)));
-        // StdOut.println(perc.wqf.connected(perc.xyTo1D(2, 1), perc.xyTo1D(1, 2)));
     }
 }

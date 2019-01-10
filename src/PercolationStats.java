@@ -1,12 +1,13 @@
+
 /******************************************************************************
  *  Compilation:  javac PercolationStats.java
  *  Execution:    java PercolationStats
- *  Dependencies: Percolation
+ *  Dependencies: Percolation, algs4.StdOut, algs4.StdRandom, algs4.StdStats
  *
- *  This program takes the grid size n as a command-line argument.
- *  Then, the user repeatedly clicks sites to open with the mouse.
- *  After each site is opened, it draws full sites in light blue,
- *  open sites (that aren't full) in white, and blocked sites in black.
+ *  This program method that takes two command-line arguments n and T, 
+ *  performs T independent computational experiments (discussed above) on an 
+ *  n-by-n grid, and prints the sample mean, sample standard deviation, 
+ *  and the 95% confidence interval for the percolation threshold.
  *
  ******************************************************************************/
 
@@ -26,6 +27,7 @@ public class PercolationStats {
    * @param trials
    */
   public PercolationStats(int n, int trials) {
+    validate(n, trials);
     size = n;
     t = trials;
     for (int i = 0; i < trials; i++) {
@@ -85,6 +87,16 @@ public class PercolationStats {
    */
   public double confidenceHi() {
     return -1;
+  }
+
+  private void validate(int n, int trials) {
+    // java.lang.IllegalArgumentException if either n ≤ 0 or trials ≤ 0.
+    if (n <= 0) {
+      throw new IllegalArgumentException("the size needs to be greater than 0");
+    }
+    if (trials <= 0) {
+      throw new IllegalArgumentException("the number of trials needs to be greater than 0");
+    }
   }
 
   /**
