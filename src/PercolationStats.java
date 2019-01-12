@@ -18,7 +18,7 @@ import edu.princeton.cs.algs4.StdStats;
 public class PercolationStats {
   private int size;
   private int t;
-  private int[] thresholds;
+  private double[] thresholds;
 
   /**
    * perform trials independent experiments on an n-by-n grid
@@ -30,8 +30,10 @@ public class PercolationStats {
     validate(n, trials);
     size = n;
     t = trials;
+    thresholds = new double[t];
+    
     for (int i = 0; i < trials; i++) {
-      trial(i);
+      thresholds[i] = trial();
     }
   }
 
@@ -40,18 +42,20 @@ public class PercolationStats {
    * 
    * @param i
    */
-  private void trial(int i) {
+  private double trial() {
     Percolation perc = new Percolation(size);
-    int k = 0;
-    while (!perc.percolates() || k <= size) {
-      int row = StdRandom.uniform(1, size + 1);
-      int col = StdRandom.uniform(1, size + 1);
-      StdOut.println("row: "+row+" col: "+col);
+    int row;
+    int col;
+    int runs = 0;
+    while (!perc.percolates()) {
+      do {
+        row = StdRandom.uniform(size) + 1;
+        col = StdRandom.uniform(size) + 1;
+      } while (perc.isOpen(row, col));
       perc.open(row, col);
-      k++;
+      runs++;
     }
-    StdOut.println("Trial: "+i+" Threshold: "+k);
-    thresholds[i] = k;
+    return runs / (Math.pow(size, 2));
   }
   
   /**
@@ -68,6 +72,9 @@ public class PercolationStats {
    * @return
    */
   public double stddev() {
+    if (t == 1) {
+      return Double.NaN;
+    }
     return StdStats.stddev(thresholds);
   }
 
@@ -77,7 +84,7 @@ public class PercolationStats {
    * @return
    */
   public double confidenceLo() {
-    return -1;
+    return mean() - (1.96 * stddev() / Math.sqrt(t));
   }
   
   /**
@@ -86,7 +93,7 @@ public class PercolationStats {
    * @return
    */
   public double confidenceHi() {
-    return -1;
+    return mean() + (1.96 * stddev() / Math.sqrt(t));
   }
 
   private void validate(int n, int trials) {
@@ -108,8 +115,6 @@ public class PercolationStats {
   public static void main(String[] args) {
     int n = Integer.parseInt(args[0]);
     int trials = Integer.parseInt(args[1]);
-    // StdOut.println("uniform: "+ StdRandom.uniform(1, n + 1));
-    StdOut.println("uniform: "+ StdRandom.uniform(1, n + 1));
     PercolationStats percStats = new PercolationStats(n, trials);
     StdOut.println("mean                    = "+ percStats.mean());
     StdOut.println("stddev                  = "+ percStats.stddev());

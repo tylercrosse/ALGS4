@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *  Compilation:  javac Percolation.java
  *  Execution:    java Percolation n

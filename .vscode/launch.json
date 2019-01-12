@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Percolation",
+            "request": "launch",
+            "mainClass": "Percolation",
+            "projectName": "algs4j"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch)",
             "request": "launch",
             "preLaunchTask": "build",
